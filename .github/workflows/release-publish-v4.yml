@@ -28,11 +28,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm test
-
       - name: Build
         run: npm run build --if-present
+
+      - name: Run tests
+        run: npm test
 
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
