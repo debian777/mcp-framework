@@ -117,7 +117,7 @@ export const McpToolsListResponse = z.object({
         tools: z.array(z.object({
             name: z.string(),
             description: z.string(),
-            inputSchema: z.record(z.any()),
+            inputSchema: z.record(z.string(), z.any()),
         })),
     }),
 });
@@ -128,7 +128,7 @@ export const McpToolsCallRequest = z.object({
     method: z.literal('tools/call'),
     params: z.object({
         name: z.string(),
-        arguments: z.record(z.any()).optional(),
+        arguments: z.record(z.string(), z.any()).optional(),
     }),
 });
 
