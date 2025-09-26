@@ -1,11 +1,12 @@
 {
   "name": "@debian777/mcp-framework",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build",
     "dev": "node dist/index.js || true",
     "test": "node --test dist/storage/__tests__/interface.test.js"
   },
@@ -17,5 +18,11 @@
   "dependencies": {
     "sqlite3": "^5.1.7",
     "zod": "^4.1.11"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   }
 }
