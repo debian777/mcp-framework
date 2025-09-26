@@ -1,0 +1,23 @@
+# Node
+node_modules/
+dist/
+.env
+npm-debug.log*
+
+# OS
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Test
+coverage/
+
+# Misc
+*.tgz
