@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "node dist/index.js || true",
-    "test": "node --test"
+    "test": "node --test dist/storage/__tests__/interface.test.js"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
@@ -15,6 +15,7 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "sqlite3": "^5.1.7",
     "zod": "^4.1.11"
   }
 }
