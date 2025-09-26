@@ -45,5 +45,42 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: npm publish --access restricted
         env:
-          # Use the GH_RELEASE_TOKEN secret if you created one, otherwise GITHUB_TOKEN
-          NODE_AUTH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
+          # Prefer an explicit NPM token; fall back to GH_RELEASE_TOKEN then GITHUB_TOKEN
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.GH_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Record package version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          echo "PACKAGE_VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
+
+      - name: Create tarball for smoke test
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          npm pack
+
+      - name: Smoke test — install packed tarball
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          mkdir -p smoke-tar && cd smoke-tar
+          npm init -y
+          # Install the tarball produced by npm pack in the repository root
+          npm install "${{ github.workspace }}/mcp-framework"/*.tgz --no-package-lock --no-audit
+          node -e "require('@debian777/mcp-framework'); console.log('tarball install OK')"
+
+      - name: Smoke test — install from GitHub Packages (optional)
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN || secrets.GH_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "No publish token found (NPM_TOKEN or GH_RELEASE_TOKEN). Skipping registry smoke test."
+            exit 0
+          fi
+          mkdir -p smoke-reg && cd smoke-reg
+          npm init -y
+          # Configure registry auth for the scoped package
+          echo "@debian777:registry=https://npm.pkg.github.com/" > .npmrc
+          echo "//npm.pkg.github.com/:_authToken=$NODE_AUTH_TOKEN" >> .npmrc
+          # PACKAGE_VERSION is exported earlier into GITHUB_ENV and available as $PACKAGE_VERSION in the shell
+          npm install @debian777/mcp-framework@$PACKAGE_VERSION --no-package-lock --no-audit
+          node -e "require('@debian777/mcp-framework'); console.log('registry install OK')"

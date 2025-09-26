@@ -4,6 +4,7 @@ import os from 'os';
 import fs from 'fs';
 import crypto from 'crypto';
 import { ExtendedStorageInterface, MemoryItem, SaveInput, UpdateInput, LoadFilter, LoadResult, WorkflowExecution, WorkflowExecutionInput, WorkflowAnalyticsFilter, WorkflowAnalyticsResult, QueryAnalysis } from '../interface.js';
+import { ensureSaveInput, ensureWorkflowExecutionInput } from '../guards.js';
 
 // Helper function to encode/decode continuation tokens
 function encodeContinuationToken(cursor: { lastId: string; filters: any; limit: number }): string {
@@ -117,6 +118,8 @@ export class SqliteStorage implements ExtendedStorageInterface {
     }
 
     async save(input: SaveInput): Promise<MemoryItem> {
+        // runtime validation to ensure required fields are present
+        ensureSaveInput(input);
         const checksum = this.generateChecksum(input);
         const now = new Date().toISOString();
         const id = crypto.randomUUID();
@@ -391,6 +394,7 @@ export class SqliteStorage implements ExtendedStorageInterface {
     }
 
     async logWorkflowExecution(input: WorkflowExecutionInput): Promise<WorkflowExecution> {
+        ensureWorkflowExecutionInput(input);
         const id = crypto.randomUUID();
         const timestamp = input.timestamp || new Date().toISOString();
 

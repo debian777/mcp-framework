@@ -1,5 +1,5 @@
 export { startJsonRpcServer, type RpcHandlers } from "./server.js";
-export { createLogger, type Logger, type LoggerOptions, type LogLevel, type LogMeta } from "./logging.js";
+export { createLogger, type Logger, type MemoryLogger, type LoggerOptions, type LogLevel, type LogMeta } from "./logging.js";
 export { registerHealth } from "./health.js";
 export {
   JSONRPC_ERROR_CODES,

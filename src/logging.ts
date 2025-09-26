@@ -42,6 +42,14 @@ export interface Logger {
   child(bindings: Record<string, unknown>): Logger;
 }
 
+// Extended logger used by MCP consumers that need memory-specific methods
+export interface MemoryLogger extends Logger {
+  child(bindings: Record<string, unknown>): MemoryLogger;
+  logMemoryStore(resource: string, task: string, type: string, scope: string, item: any, duration: number, meta?: Record<string, unknown>): void;
+  logMemoryLoad(query: any, results: any, duration: number, meta?: Record<string, unknown>): void;
+  logMemoryOrganize(operation: string, stats: any, duration: number, meta?: Record<string, unknown>): void;
+}
+
 interface InternalLogger extends Logger {
   readonly level: LogLevel;
   readonly name?: string;
