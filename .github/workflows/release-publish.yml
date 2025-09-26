@@ -1,4 +1,7 @@
+
 name: Release & Publish
+permissions:
+  contents: write
 
 on:
   push:
