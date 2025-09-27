@@ -1,6 +1,6 @@
 {
   "name": "@debian777/mcp-framework",
-  "version": "0.0.1",
+  "version": "0.0.2-pre.0",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,6 +10,14 @@
     "dev": "node dist/index.js || true",
     "test": "node --test dist/storage/__tests__/interface.test.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/debian777/mcp-framework.git"
+  },
+  "bugs": {
+    "url": "https://github.com/debian777/mcp-framework/issues"
+  },
+  "homepage": "https://github.com/debian777/mcp-framework#readme",
   "devDependencies": {
     "@types/node": "^24.5.2",
     "typescript": "^5.9.2"
@@ -22,6 +30,6 @@
     "dist/**/*"
   ],
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://npm.pkg.github.com"
   }
 }
