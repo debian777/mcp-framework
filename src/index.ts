@@ -101,19 +101,17 @@ export {
   parseEnvList,
 } from "./config.js";
 
-export {
+export type {
   StorageInterface,
   ExtendedStorageInterface,
-  createStorage,
-  createStorageFromEnv,
-  type StorageConfig,
-  type MemoryItem,
-  type SaveInput,
-  type UpdateInput,
-  type LoadFilter,
-  type LoadResult,
-  type WorkflowExecution,
-  type WorkflowExecutionInput,
-  type WorkflowAnalyticsFilter,
-  type WorkflowAnalyticsResult,
+  StorageConfig,
+  MemoryItem,
+  SaveInput,
+  UpdateInput,
+  LoadFilter,
+  LoadResult,
+  WorkflowExecution,
+  WorkflowExecutionInput,
+  WorkflowAnalyticsFilter,
+  WorkflowAnalyticsResult,
 } from "./storage/index.js";

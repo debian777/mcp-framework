@@ -8,7 +8,9 @@
     "build": "tsc -p tsconfig.json",
     "prepare": "npm run build",
     "dev": "node dist/index.js || true",
-    "test": "node --test dist/storage/__tests__/interface.test.js"
+    "test": "npm run build && node --test dist/**/__tests__/**/*.test.js",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -19,7 +21,9 @@
   },
   "homepage": "https://github.com/debian777/mcp-framework#readme",
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.5.2",
+    "ts-jest": "^29.4.4",
     "typescript": "^5.9.2"
   },
   "dependencies": {
