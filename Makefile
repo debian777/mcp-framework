@@ -2,6 +2,13 @@ SHELL := /bin/zsh
 NPM_CMD ?= npm
 
 .PHONY: help build install test pack bump-pre clean
+ 
+update-deps:
+	@echo "==> Checking outdated deps (mcp-framework)"
+	@$(NPM_CMD) outdated || true
+	@echo "==> Updating dependencies (mcp-framework)"
+	@$(NPM_CMD) update
+	@$(NPM_CMD) install
 
 help:
 	@echo "Makefile for mcp-framework"
