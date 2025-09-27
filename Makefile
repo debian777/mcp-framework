@@ -8,6 +8,7 @@ update-deps:
 	@$(NPM_CMD) outdated || true
 	@echo "==> Updating dependencies (mcp-framework)"
 	@$(NPM_CMD) update
+	@$(NPM_CMD) install
 
 
 help:
