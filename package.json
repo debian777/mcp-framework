@@ -8,7 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "prepare": "npm run build",
     "dev": "node dist/index.js || true",
-    "test": "npm run build && node --test dist/**/__tests__/**/*.test.js",
+    "test": "npm run build && find dist -name '*.test.js' -exec node --test {} +",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },
