@@ -6,6 +6,9 @@ on:
       - "v*.*.*"           # Triggers on version tags like v1.2.3
   workflow_dispatch:
 
+env:
+  NODE_AUTH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
+
 jobs:
   release-and-publish:
     runs-on: ubuntu-latest
@@ -24,6 +27,8 @@ jobs:
           node-version: '20.x'
           registry-url: 'https://npm.pkg.github.com/'
           scope: '@${{ github.repository_owner }}'
+          always-auth: true
+          check-latest: true
 
       - name: Install dependencies
         run: npm ci
@@ -40,38 +45,52 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
+        env:
+          NODE_AUTH_TOKEN: ""
+
+      - name: Determine package version and npm tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
+          # If the version contains a prerelease hyphen (e.g. 1.2.3-pre.1), publish with the 'prerelease' tag
+          if echo "$VERSION" | grep -q -- '-'; then
+            echo "NPM_TAG=prerelease" >> $GITHUB_ENV
+          else
+            echo "NPM_TAG=latest" >> $GITHUB_ENV
+          fi
 
       - name: Publish to GitHub Package Registry (restricted)
         if: startsWith(github.ref, 'refs/tags/')
         run: npm publish --access restricted
-        env:
-          # Use GH_RELEASE_TOKEN only for authentication to GitHub Packages
-          NODE_AUTH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
 
       - name: Record package version
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          echo "PACKAGE_VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
+          # Read version with node into a shell variable, avoid nested quoting in echo
+          VERSION=$(node -p 'require("./package.json").version')
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
+        env:
+          NODE_AUTH_TOKEN: ""
 
-      - name: Create tarball for smoke test
+
+      - name: Wait for package to show up on registry
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          npm pack
-
-      - name: Smoke test — install packed tarball
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          mkdir -p smoke-tar && cd smoke-tar
-          npm init -y
-          # Install the tarball produced by npm pack in the repository root
-          npm install "${{ github.workspace }}/mcp-framework"/*.tgz --no-package-lock --no-audit
-          node -e "require('@debian777/mcp-framework'); console.log('tarball install OK')"
+          echo "Waiting for @debian777/mcp-framework@$PACKAGE_VERSION to be available..."
+          for i in $(seq 1 20); do
+            if npm view @debian777/mcp-framework@$PACKAGE_VERSION --registry=https://npm.pkg.github.com/ > /dev/null 2>&1; then
+              echo "package available"
+              exit 0
+            fi
+            echo "not available yet (attempt $i) — sleeping 3s"
+            sleep 3
+          done
+          echo "package not found after retries" >&2
+          exit 1
 
       - name: Smoke test — install from GitHub Packages (optional)
         if: startsWith(github.ref, 'refs/tags/')
-        env:
-          # Use GH_RELEASE_TOKEN only for registry smoke test
-          NODE_AUTH_TOKEN: ${{ secrets.GH_RELEASE_TOKEN }}
         run: |
           if [ -z "$NODE_AUTH_TOKEN" ]; then
             echo "No publish token found (NPM_TOKEN or GH_RELEASE_TOKEN). Skipping registry smoke test."
@@ -79,9 +98,6 @@ jobs:
           fi
           mkdir -p smoke-reg && cd smoke-reg
           npm init -y
-          # Configure registry auth for the scoped package
-          echo "@debian777:registry=https://npm.pkg.github.com/" > .npmrc
-          echo "//npm.pkg.github.com/:_authToken=$NODE_AUTH_TOKEN" >> .npmrc
           # PACKAGE_VERSION is exported earlier into GITHUB_ENV and available as $PACKAGE_VERSION in the shell
           npm install @debian777/mcp-framework@$PACKAGE_VERSION --no-package-lock --no-audit
-          node -e "require('@debian777/mcp-framework'); console.log('registry install OK')"
+          node -e "(async () => { await import('@debian777/mcp-framework'); console.log('registry install OK') })().catch(e => { console.error(e); process.exit(1); })"
