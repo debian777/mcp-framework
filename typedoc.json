@@ -3,7 +3,7 @@
     "entryPoints": [
         "src/index.ts"
     ],
-    "out": "docs/api",
+    "out": "site/api",
     "exclude": [
         "**/*.test.ts",
         "**/*.spec.ts",
@@ -55,7 +55,7 @@
     "theme": "default",
     "lightHighlightTheme": "github-light",
     "darkHighlightTheme": "github-dark",
-    "customCss": "",
+    // removed customCss to avoid accidental recursive copy into assets
     "markdownItOptions": {
         "html": false,
         "linkify": true,
