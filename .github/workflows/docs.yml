@@ -56,15 +56,15 @@ jobs:
           pip install mkdocs mkdocs-material
 
       - name: Build MkDocs site
-        run: mkdocs build
+        run: mkdocs build -d docs
 
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
-          publish_branch: gh-pages
+          publish_dir: ./docs
+          publish_branch: main
           cname: mcp-framework.pages.dev
 
       - name: Configure GitHub Pages site
@@ -88,7 +88,7 @@ jobs:
             await github.rest.repos.createOrUpdatePagesSite({
               owner,
               repo,
-              source: { branch: 'gh-pages', path: '/' }
+              source: { branch: 'main', path: '/docs' }
             });
 
             // Set the CNAME file for the Pages site
