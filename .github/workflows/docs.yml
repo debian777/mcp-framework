@@ -46,6 +46,19 @@ jobs:
       - name: Generate API docs with TypeDoc
         run: npx typedoc
 
+      - name: Copy TypeDoc output into MkDocs docs folder
+        run: |
+          echo "Cleaning old docs/api if present"
+          rm -rf docs/api
+          mkdir -p docs
+          if [ -d site/api ]; then
+            echo "Copying site/api -> docs/api"
+            # use rsync to avoid recursive issues and preserve timestamps
+            rsync -a --delete site/api/ docs/api/
+          else
+            echo "Warning: site/api not found, skipping copy"
+          fi
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
