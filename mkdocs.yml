@@ -1,0 +1,93 @@
+site_name: mcp-framework
+site_url: https://debian777.github.io/mcp-framework
+repo_url: https://github.com/debian777/mcp-framework
+repo_name: debian777/mcp-framework
+
+theme:
+  name: material
+  palette:
+    primary: blue
+    accent: blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          selection:
+            docstring_style: google
+          rendering:
+            show_source: true
+
+nav:
+  - Overview: index.md
+  - Getting Started: getting-started.md
+  - Core Concepts: core-concepts.md
+  - Guides:
+      - guides/index.md
+      - Tools: guides/tools.md
+      - Resources: guides/resources.md
+      - Prompts: guides/prompts.md
+      - Errors & Logging: guides/errors-logging.md
+      - Transports: guides/transports.md
+      - Testing: guides/testing.md
+      - Deployment: guides/deployment.md
+  - Examples:
+      - examples/index.md
+      - Hello World: examples/hello-world.md
+      - Filesystem Provider: examples/filesystem.md
+      - API Bridge: examples/api-bridge.md
+  - Reference:
+      - reference/index.md
+      - Configuration: reference/configuration.md
+      - Error Codes: reference/error-codes.md
+      - API Reference: api/
+  - AI Instructions: ai-instructions.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - footnotes
+  - toc:
+      permalink: true
+  - attr_list
+  - md_in_html
+
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/debian777/mcp-framework
+    - icon: fontawesome/brands/npm
+      link: https://www.npmjs.com/package/@debian777/mcp-framework
+
+watch:
+  - docs

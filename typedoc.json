@@ -1,0 +1,70 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": [
+        "src/index.ts"
+    ],
+    "out": "docs/api",
+    "exclude": [
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/__tests__/**"
+    ],
+    "excludePrivate": true,
+    "excludeProtected": true,
+    "excludeInternal": true,
+    "excludeNotDocumented": false,
+    "includeVersion": true,
+    "disableSources": false,
+    "sourceLinkTemplate": "https://github.com/debian777/mcp-framework/blob/{gitRevision}/{path}#L{line}",
+    "gitRevision": "main",
+    "readme": "none",
+    "categorizeByGroup": true,
+    "categoryOrder": [
+        "Providers",
+        "Server",
+        "Transport",
+        "Storage",
+        "Configuration",
+        "Utilities",
+        "*"
+    ],
+    "defaultCategory": "Other",
+    "groupOrder": [
+        "Providers",
+        "Server",
+        "Transport",
+        "Storage",
+        "Configuration",
+        "Utilities",
+        "*"
+    ],
+    "sort": [
+        "source-order",
+        "required-first",
+        "kind"
+    ],
+    "visibilityFilters": {
+        "protected": false,
+        "private": false,
+        "inherited": true,
+        "external": true
+    },
+    "searchInComments": true,
+    "cleanOutputDir": true,
+    "emit": "docs",
+    "theme": "default",
+    "lightHighlightTheme": "github-light",
+    "darkHighlightTheme": "github-dark",
+    "customCss": "",
+    "markdownItOptions": {
+        "html": false,
+        "linkify": true,
+        "typographer": true
+    },
+    "githubPages": true,
+    "hideGenerator": true,
+    "treatWarningsAsErrors": false,
+    "intentionallyNotExported": [],
+    "logLevel": "Info",
+    "skipErrorChecking": false
+}
