@@ -60,9 +60,9 @@ jobs:
             echo "NPM_TAG=latest" >> $GITHUB_ENV
           fi
 
-      - name: Publish to GitHub Package Registry (restricted)
+      - name: Publish to GitHub Package Registry (public)
         if: startsWith(github.ref, 'refs/tags/')
-        run: npm publish --access restricted
+        run: npm publish --access public
 
       - name: Record package version
         if: startsWith(github.ref, 'refs/tags/')
