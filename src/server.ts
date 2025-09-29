@@ -14,14 +14,14 @@ export async function startJsonRpcServer(handlers: RpcHandlers) {
     let req: any;
     try { req = JSON.parse(line); }
     catch {
-      await write({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" }});
+      await write({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } });
       continue;
     }
 
     const { id, method, params } = req ?? {};
     const fn = handlers?.[method as keyof typeof handlers];
     if (!fn) {
-      await write({ jsonrpc: "2.0", id, error: { code: -32601, message: "Method not found" }});
+      await write({ jsonrpc: "2.0", id, error: { code: -32601, message: "Method not found" } });
       continue;
     }
 
@@ -30,8 +30,8 @@ export async function startJsonRpcServer(handlers: RpcHandlers) {
       await write({ jsonrpc: "2.0", id, result });
     } catch (e: any) {
       const message = e?.message ?? String(e);
-      await write({ jsonrpc: "2.0", id, error: { code: -32000, message }});
-      stderr.write(`[mcp-kit] handler error: ${message}\n`);
+      await write({ jsonrpc: "2.0", id, error: { code: -32000, message } });
+      stderr.write(`handler error: ${message}\n`);
     }
   }
 }

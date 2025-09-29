@@ -129,8 +129,8 @@ function defaultLogger(): TransportLogger {
   return {
     debug: () => { },
     info: () => { },
-    warn: (msg, meta) => stderr.write(`[mcp-kit][warn] ${msg}${meta ? ` ${JSON.stringify(meta)}` : ""}\n`),
-    error: (msg, meta) => stderr.write(`[mcp-kit][error] ${msg}${meta ? ` ${JSON.stringify(meta)}` : ""}\n`),
+    warn: (msg, meta) => stderr.write(`${msg}${meta ? ` ${JSON.stringify(meta)}` : ""}\n`),
+    error: (msg, meta) => stderr.write(`${msg}${meta ? ` ${JSON.stringify(meta)}` : ""}\n`),
   };
 }
 
