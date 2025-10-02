@@ -3,7 +3,7 @@ NPM_CMD ?= npm
 
 .PHONY: help build install test pack bump-pre clean
  
-update-deps:
+update:
 	@echo "==> Checking outdated deps (mcp-framework)"
 	@$(NPM_CMD) outdated || true
 	@echo "==> Updating dependencies (mcp-framework)"
