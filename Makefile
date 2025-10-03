@@ -1,7 +1,7 @@
 SHELL := /bin/zsh
 NPM_CMD ?= npm
 
-.PHONY: help build install test pack bump-pre clean
+.PHONY: help build install test pack bump-pre clean docs
  
 update:
 	@echo "==> Checking outdated deps (mcp-framework)"
@@ -13,7 +13,7 @@ update:
 
 help:
 	@echo "Makefile for mcp-framework"
-	@echo "Targets: build, install, test, pack, bump-pre, clean"
+	@echo "Targets: build, install, test, pack, bump-pre, clean, docs"
 
 build:
 	@echo "==> Building mcp-framework"
@@ -39,3 +39,9 @@ bump-pre:
 clean:
 	@echo "==> Cleaning (mcp-framework)"
 	@rm -rf node_modules dist *.tgz || true
+
+docs:
+	@echo "==> Building API documentation (mcp-framework)"
+	@$(NPM_CMD) run docs:api
+	@echo "==> Building MkDocs site (mcp-framework)"
+	@$(NPM_CMD) run docs:build

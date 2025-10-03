@@ -1,4 +1,4 @@
-// Storage layer exports for MCP Kit
+// Storage layer exports for MCP Framework
 export * from './interface.js';
 export * from './factory.js';
-export { SqliteStorage } from './backends/sqlite.js';
+export { MemoryStorage } from './backends/memory.js';

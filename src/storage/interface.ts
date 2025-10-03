@@ -1,5 +1,5 @@
 /**
- * Storage interface for MCP Kit - Unified storage abstraction
+ * Storage interface for MCP Framework - Unified storage abstraction
  * Provides unified API for different storage backends across MCP servers
  */
 

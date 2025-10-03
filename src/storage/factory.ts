@@ -1,13 +1,13 @@
 /**
- * Storage factory for MCP Kit - Unified storage backend creation
+ * Storage factory for MCP Framework - Unified storage backend creation
  * Provides environment-based backend resolution for all MCP servers
  */
 
 import { ExtendedStorageInterface } from './interface.js';
-import { SqliteStorage } from './backends/sqlite.js';
+import { MemoryStorage } from './backends/memory.js';
 
 export interface StorageConfig {
-    backend?: 'sqlite' | 'postgres' | 'memory';
+    backend?: 'memory' | 'postgres';
     uri?: string;
     path?: string;
     // PostgreSQL options would be added in Phase 2
@@ -27,11 +27,11 @@ function resolveStorageConfig(envPrefix?: string): StorageConfig {
 
     if (uri) {
         // Simple backend detection for Phase 1
-        if (uri.startsWith('sqlite:') || uri.startsWith('file:')) {
-            return { backend: 'sqlite', uri };
+        if (uri.startsWith('memory:')) {
+            return { backend: 'memory', uri };
         }
-        // Default to SQLite for Phase 1
-        return { backend: 'sqlite', uri };
+        // Default to memory for Phase 1
+        return { backend: 'memory', uri };
     }
 
     // Check for direct path configuration
@@ -39,11 +39,11 @@ function resolveStorageConfig(envPrefix?: string): StorageConfig {
     const path = process.env[pathKey];
 
     if (path) {
-        return { backend: 'sqlite', path };
+        return { backend: 'memory', path };
     }
 
     // Default configuration
-    return { backend: 'sqlite', path: './data/storage.db' };
+    return { backend: 'memory' };
 }
 
 /**
@@ -55,10 +55,9 @@ export async function createStorage(config?: StorageConfig): Promise<ExtendedSto
     const finalConfig = config || resolveStorageConfig();
 
     switch (finalConfig.backend) {
-        case 'sqlite':
+        case 'memory':
         default:
-            const path = finalConfig.path || finalConfig.uri || './data/storage.db';
-            return new SqliteStorage(path);
+            return new MemoryStorage();
     }
 }
 

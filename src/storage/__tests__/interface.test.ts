@@ -1,25 +1,20 @@
 /**
- * Basic unit tests for MCP Kit storage interfaces
+ * Basic unit tests for MCP Framework storage interfaces
  * Phase 1: Interface contract verification
  */
 
-import { SqliteStorage } from '../backends/sqlite.js';
+import { MemoryStorage } from '../backends/memory.js';
 import { ExtendedStorageInterface, SaveInput, LoadFilter } from '../interface.js';
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
 
 // Simple test runner for Phase 1
 async function runTests() {
-    console.log('Running MCP Kit Storage Interface Tests...');
+    console.log('Running MCP Framework Storage Interface Tests...');
 
     let storage: ExtendedStorageInterface | undefined = undefined;
-    let testDbPath: string | undefined = undefined;
 
     try {
         // Setup
-        testDbPath = path.join(os.tmpdir(), `mcp-kit-test-${Date.now()}.db`);
-        storage = new SqliteStorage(testDbPath);
+        storage = new MemoryStorage();
         await storage.initialize();
 
         // Test 1: Basic save and load
@@ -74,7 +69,7 @@ async function runTests() {
         // Test 5: Extended methods
         console.log('✓ Test 5: Extended interface methods');
         const storageType = storage.getStorageType();
-        if (storageType !== 'sqlite') {
+        if (storageType !== 'memory') {
             throw new Error('Storage type test failed');
         }
 
@@ -98,9 +93,6 @@ async function runTests() {
         // Cleanup
         if (storage) {
             await storage.close();
-        }
-        if (testDbPath && fs.existsSync(testDbPath)) {
-            fs.unlinkSync(testDbPath);
         }
     }
 }

@@ -1,6 +1,20 @@
 # Documentation Development Notes
 
-This document provides information for developers working on the mcp-framework documentation.
+This document provides information for **MCP-framework developers (AI)** working on the framework codebase and documentation. It distinguishes between two types of developers:
+
+## Developer Types
+
+### 1. MCP-Framework Developers (AI)
+- **Audience**: AI agents working on the framework codebase
+- **Purpose**: Maintain and develop the framework itself
+- **Documentation**: Located in `.ai/` directory
+- **Focus**: Framework internals, architecture, coding standards
+
+### 2. Framework Implementers (Humans)
+- **Audience**: Human developers using the mcp-framework package
+- **Purpose**: Build MCP servers using this framework
+- **Documentation**: Located in `docs/` directory
+- **Focus**: Installation, usage, examples, API reference
 
 ## NPM Scripts
 
@@ -59,34 +73,30 @@ This builds and deploys the documentation to the `gh-pages` branch.
 
 ## Documentation Structure
 
+### Framework Implementers (Humans) - `docs/` Directory
 ```
 docs/
 ├── index.md                    # Overview/Home page
 ├── getting-started.md          # Quick start guide
 ├── core-concepts.md            # Architecture and concepts
-├── ai-instructions.md          # AI coding guidelines
-├── guides/                     # Detailed guides
-│   ├── tools.md               # Tool development
-│   ├── resources.md           # Resource development
-│   ├── prompts.md             # Prompt development
-│   ├── errors-logging.md      # Error handling & logging
-│   ├── transports.md          # Transport configuration
-│   ├── testing.md             # Testing strategies
-│   └── deployment.md          # Production deployment
-├── examples/                   # Complete examples
-│   ├── hello-world.md         # Basic example
-│   ├── filesystem.md          # File system provider
-│   └── api-bridge.md          # API integration
-├── reference/                  # Technical reference
-│   ├── configuration.md       # Configuration options
-│   └── error-codes.md         # Error code reference
-├── api/                       # Generated API docs (TypeDoc)
-├── development/               # Development docs
-│   ├── contributing.md        # Contribution guidelines
-│   ├── framework-development-plan.md
-│   └── ai-improvement-starter.md
-└── adr/                       # Architecture decision records
-    └── 000-template.md        # ADR template
+├── api/                        # Generated API docs (TypeDoc)
+│   └── COMPATIBILITY.md        # API compatibility notes
+├── development/                # Development docs (currently empty)
+├── examples/                   # Complete examples (currently empty)
+├── guides/                     # Detailed guides (currently empty)
+├── reference/                  # Technical reference (currently empty)
+└── README-docs-notes.md        # Documentation development notes (moved here)
+```
+
+### MCP-Framework Developers (AI) - `.ai/` Directory
+```
+.ai/
+├── README.md                   # AI coding guidelines and framework overview
+├── README-docs-notes.md        # This file - documentation development notes
+├── FRAMEWORK-DEVELOPMENT-PLAN.md # Framework development plan
+├── TODO.md                     # TODO list
+└── adr/                        # Architecture decision records
+    └── 000-template.md         # ADR template
 ```
 
 ## Writing Guidelines
@@ -143,7 +153,7 @@ nav:
   - Guides: guides/
   - Examples: examples/
   - Reference: reference/
-  - AI Instructions: ai-instructions.md
+  # Note: AI Instructions are in .ai/README.md (not included in MkDocs navigation)
 ```
 
 ## TypeDoc Configuration
@@ -160,7 +170,7 @@ The `typedoc.json` file configures API documentation generation:
 - **Providers**: ToolProvider, ResourceProvider, PromptProvider
 - **Server**: FrameworkServer, FrameworkBuilder
 - **Transport**: Transport implementations
-- **Storage**: Storage interfaces and backends
+- **Storage**: Storage interfaces (currently only memory backend)
 - **Configuration**: Configuration types and utilities
 - **Utilities**: Helper functions and utilities
 
@@ -211,7 +221,7 @@ Documentation is deployed to `https://debian777.github.io/mcp-framework/` on the
 
 ### Documentation Standards
 
-- Follow the [AI Instructions](ai-instructions.md) for consistent style
+- Follow the [AI Instructions](.ai/README.md) for consistent style
 - Use inclusive and accessible language
 - Keep examples simple but complete
 - Update documentation with code changes

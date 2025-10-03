@@ -28,17 +28,22 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^24.5.2",
     "ts-jest": "^29.4.4",
+    "typedoc": "^0.28.0",
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "sqlite3": "^5.1.7",
     "zod": "^4.1.11"
   },
   "files": [
     "dist/**/*"
   ],
   "overrides": {
-    "glob": "^10.0.0"
+    "glob": "^10.0.0",
+    "rimraf": "^4.0.0",
+    "@npmcli/move-file": "^2.0.0",
+    "npmlog": "^7.0.0",
+    "are-we-there-yet": "^4.0.0",
+    "gauge": "^5.0.0"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

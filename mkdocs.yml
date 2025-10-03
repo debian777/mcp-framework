@@ -52,7 +52,6 @@ nav:
       - Configuration: reference/configuration.md
       - Error Codes: reference/error-codes.md
       - API Reference: api/
-  - AI Instructions: ai-instructions.md
 
 markdown_extensions:
   - pymdownx.highlight:
