@@ -11,6 +11,7 @@
     "test": "npm run build && find dist -name '*.test.js' -exec node --test {} +",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:console": "grep -Er 'console\\.(log|warn|info|error|debug)' src/ | grep -v '__tests__' | grep -v 'dispatcher.ts' && echo 'ERROR: Direct console usage found in src/ - use framework logger instead' && exit 1 || echo '✓ No direct console usage found (excluding tests and dispatcher)'",
     "docs:api": "typedoc",
     "docs:serve": "mkdocs serve",
     "docs:build": "mkdocs build",
