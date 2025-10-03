@@ -417,7 +417,14 @@ export class StdioTransport {
     try {
       // Log the notification
       if (notification.method === "notifications/initialized") {
-        this.logger.info?.("Legacy initialized notification accepted", { params: notification.params });
+        this.logger.debug?.("Legacy initialized notification accepted", { params: notification.params });
+        this.logger.debug?.("Legacy notification details", {
+          method: notification.method,
+          params: notification.params,
+          timestamp: Date.now(),
+          framing: this.currentFraming,
+          framingResolved: this.framingResolved
+        });
       } else {
         this.logger.info?.("Notification received", { method: notification.method, params: notification.params });
       }

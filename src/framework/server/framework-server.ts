@@ -1,10 +1,22 @@
-import { StdioTransport } from '../../transport/stdio.js';
+import { StdioTransport, TransportLogger } from '../../transport/stdio.js';
 import { ProviderRegistry } from '../registry/provider-registry.js';
 import { ResourceProvider } from '../providers/abstract/resource-provider.js';
 import { ToolProvider } from '../providers/abstract/tool-provider.js';
 import { PromptProvider } from '../providers/abstract/prompt-provider.js';
 import { Resource, ResourceTemplate, Tool, Prompt } from '../../types.js';
 import { createLogger, Logger } from '../../logging.js';
+
+/**
+ * Adapter to convert Logger to TransportLogger
+ */
+function createTransportLogger(logger: Logger): TransportLogger {
+    return {
+        debug: (msg: string, meta?: Record<string, unknown>) => logger.debug(msg, meta),
+        info: (msg: string, meta?: Record<string, unknown>) => logger.info(msg, meta),
+        warn: (msg: string, meta?: Record<string, unknown>) => logger.warn(msg, meta),
+        error: (msg: string, meta?: Record<string, unknown>) => logger.error(msg, meta),
+    };
+}
 
 /**
  * Configuration for the framework server
@@ -233,6 +245,8 @@ export class FrameworkServer {
             // This would need to be implemented to handle MCP requests
             // For now, this is a placeholder
             throw new Error('Direct transport connection not implemented yet');
+        }, {
+            logger: createTransportLogger(this.logger)
         });
         await transport.start();
     }
