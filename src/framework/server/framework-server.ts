@@ -44,7 +44,7 @@ export class FrameworkServer {
             ...config
         };
         this.registry = new ProviderRegistry();
-        this.logger = config.logger || createLogger('framework-server');
+        this.logger = config.logger || createLogger({ name: 'framework-server', stream: undefined });
     }
 
     /**
