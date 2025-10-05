@@ -39,4 +39,28 @@ export function resolveUriTemplate(template: string, params: Record<string, any>
     });
 }
 
-export default { matchUriTemplate, resolveUriTemplate };
+// Named exports only (avoid duplicate/default export)
+
+/**
+ * Validate a uri template. Ensures the template contains a supported scheme
+ * (https:, file:, git:) and that placeholders are valid identifiers.
+ */
+export function validateTemplate(template: string): boolean {
+    if (typeof template !== 'string' || template.length === 0) return false;
+    // Basic scheme check: must start with scheme://
+    const schemeMatch = template.match(/^([a-zA-Z][a-zA-Z0-9+.-]*):\/\//);
+    if (!schemeMatch) return false;
+    const scheme = schemeMatch[1] + ':';
+    if (!['https:', 'file:', 'git:'].includes(scheme)) return false;
+
+    // Placeholders must be alphanumeric, underscore or dash
+    const invalidPlaceholder = template.match(/\{([^}]+)\}/g)?.some((ph) => !/^\{[a-zA-Z0-9_\-]+\}$/.test(ph));
+    if (invalidPlaceholder) return false;
+
+    // No spaces allowed in template
+    if (template.includes(' ')) return false;
+
+    return true;
+}
+
+// validateTemplate exported by its declaration above
