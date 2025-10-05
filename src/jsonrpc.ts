@@ -79,6 +79,8 @@ export const McpInitializeRequest = z.object({
             tools: z.object({}).optional(),
             resources: z.object({}).optional(),
             prompts: z.object({}).optional(),
+            logging: z.object({}).optional(),
+            sampling: z.object({}).optional(),
         }).optional(),
         clientInfo: z.object({
             name: z.string(),
@@ -96,6 +98,8 @@ export const McpInitializeResponse = z.object({
             tools: z.object({}).optional(),
             resources: z.object({}).optional(),
             prompts: z.object({}).optional(),
+            logging: z.object({}).optional(),
+            sampling: z.object({}).optional(),
         }),
         serverInfo: z.object({
             name: z.string(),
