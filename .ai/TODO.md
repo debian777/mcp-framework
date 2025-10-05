@@ -21,6 +21,12 @@ This guide outlines the implementation of full MCP (Model Context Protocol) stan
 - Resource templates
 - Logging capability negotiation
 - Sampling support
+✅ **Progress:** Phase 1 completed (see Implementation Plan updates below)
+
+Updated status (completed in this branch `feat/mcp-standards-phase1`):
+- ✅ Standardized error codes
+- ✅ URI scheme validation
+- ✅ Logging capability negotiation
 
 ## Implementation Plan
 
@@ -33,6 +39,9 @@ This guide outlines the implementation of full MCP (Model Context Protocol) stan
 2. Add logging capability interface
 3. Modify server initialization to advertise logging support
 4. Update capability negotiation logic
+
+Status: ✅ Done
+
 
 **Code Changes:**
 ```typescript
@@ -57,6 +66,8 @@ capabilities: z.object({
 1. Update `JSONRPC_ERROR_CODES` in `src/errors.ts`
 2. Map existing custom errors to standard codes
 3. Update error mapping logic in `mapErrorToJsonRpc()`
+
+Status: ✅ Done
 
 **Error Code Mapping:**
 ```typescript
@@ -84,6 +95,8 @@ export const JSONRPC_ERROR_CODES = {
 2. Add scheme validation to resource registration
 3. Update resource provider interfaces to validate URIs
 4. Add tests for URI validation
+
+Status: ✅ Done
 
 **URI Validation Logic:**
 ```typescript
