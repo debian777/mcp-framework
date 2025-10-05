@@ -124,6 +124,10 @@ export function validateMcpUri(uri: string): boolean {
 
 Status: ✅ Done (resource template types added, matcher and resolver implemented, FrameworkServer uses matcher)
 
+### Resource Provider Integration
+
+Status: ✅ Done (example TemplateProvider added and FrameworkServer readResource resolves templates)
+
 **Resource Template Example:**
 ```typescript
 interface ResourceTemplate {
