@@ -15,8 +15,9 @@ A modern, provider-based framework for building Model Context Protocol (MCP) ser
 ### 🔧 **Core Infrastructure**
 - **Transport Layers**: STDIO and HTTP transport implementations
 - **Storage Abstraction**: SQLite/PostgreSQL backends with unified interface
-- **Security**: Input sanitization, validation, and access control
-- **Logging**: Structured logging with configurable levels and formats
+- **Security**: Input sanitization, validation, URI scheme enforcement, and access control
+- **Logging**: Structured logging with configurable levels and formats, MCP capability negotiation
+- **Standards Compliance**: Full MCP protocol compliance with error codes, URI validation, and capabilities
 
 ### 🚀 **Developer Experience**
 - **TypeScript First**: Full type safety with strict checking
@@ -50,6 +51,32 @@ const server = await new FrameworkBuilder()
   .build();
 
 await server.start();
+```
+
+### MCP Client Usage
+
+Connect to external MCP servers (like context7) using the built-in client:
+
+```typescript
+import { McpClient, StdioClientTransport } from '@debian777/mcp-framework';
+
+// Connect to an MCP server
+const transport = new StdioClientTransport('node', ['path/to/mcp-server.js']);
+const client = new McpClient(transport);
+
+await client.connect();
+await client.initialize();
+
+// Use server capabilities
+const tools = await client.listTools();
+const result = await client.callTool('some-tool', { param: 'value' });
+
+// Sampling (if server supports it)
+const sample = await client.sample({
+  messages: [{ role: 'user', content: { type: 'text', text: 'Hello!' } }]
+});
+
+await client.disconnect();
 ```
 
 ### Adding Providers
@@ -443,6 +470,18 @@ We welcome contributions! Please see our [contributing guide](docs/development/c
 - **Prettier**: Consistent code formatting
 - **Jest**: Comprehensive test suite
 - **Commitlint**: Conventional commit validation
+
+## MCP Standards Compliance
+
+The framework implements full MCP (Model Context Protocol) standards compliance:
+
+### ✅ **Implemented Standards**
+- **Error Codes**: Standardized JSON-RPC error codes aligned with MCP specification
+- **URI Schemes**: Validation of `https://`, `file://`, and `git://` schemes for resources
+- **Capabilities Negotiation**: Complete capability exchange during initialization including logging
+- **Resource Templates**: Support for dynamic resource URI generation
+- **Client Support**: Full MCP client implementation with sampling capabilities
+- **Protocol Compliance**: Full adherence to MCP protocol version 2024-11-05
 
 ## Compatibility
 

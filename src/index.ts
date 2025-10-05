@@ -101,6 +101,14 @@ export {
   parseEnvList,
 } from "./config.js";
 
+export {
+  McpClient,
+  StdioClientTransport,
+  type ClientTransport,
+  type SamplingOptions,
+  type SamplingResult,
+} from "./client/index.js";
+
 export type {
   StorageInterface,
   ExtendedStorageInterface,

@@ -1,5 +1,17 @@
-const DEFAULT_MAX_INPUT_BYTES = parseInt(process.env.MCP_INPUT_MAX_BYTES || "1048576", 10);
+// Consolidated security utilities for MCP Framework
 
+export const VALID_MCP_SCHEMES = ['https:', 'file:', 'git:'] as const;
+
+export function validateMcpUri(uri: string): boolean {
+  try {
+    const url = new URL(uri);
+    return (VALID_MCP_SCHEMES as readonly string[]).includes(url.protocol);
+  } catch {
+    return false;
+  }
+}
+
+const DEFAULT_MAX_INPUT_BYTES = parseInt(process.env.MCP_INPUT_MAX_BYTES || "1048576", 10);
 export const DEFAULT_MAX_INPUT_SIZE = Number.isFinite(DEFAULT_MAX_INPUT_BYTES) ? DEFAULT_MAX_INPUT_BYTES : 1048576;
 
 export function sanitizeForLogging(input: string): string {
@@ -11,7 +23,7 @@ export function sanitizeForLogging(input: string): string {
     .replace(/\t/g, " ")
     .replace(/[\r\n]/g, " ")
     .replace(/\x00/g, "")
-    .replace(/[\x01-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, " ")
+    .replace(/[---]/g, " ")
     .replace(/ +/g, " ")
     .trim();
 }
@@ -114,7 +126,7 @@ export function validateToolParameters(params: any, maxParamSize: number = DEFAU
 export class SimpleRateLimiter {
   private readonly requests = new Map<string, number[]>();
 
-  constructor(private readonly windowMs: number = 60000, private readonly maxRequests: number = 100) {}
+  constructor(private readonly windowMs: number = 60000, private readonly maxRequests: number = 100) { }
 
   isAllowed(key: string): boolean {
     const now = Date.now();

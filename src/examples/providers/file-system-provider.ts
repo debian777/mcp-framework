@@ -16,7 +16,7 @@ export class FileSystemProvider extends ResourceProvider {
         this.basePath = resolve(basePath);
     }
 
-    getStaticResources(): any[] {
+    protected getStaticResourcesImpl(): any[] {
         const resources: any[] = [];
 
         try {

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { Resource, ResourceTemplate } from '../../../types.js';
+import { validateMcpUri } from '../../../security.js';
+import { validateTemplate } from '../../../resource-template.js';
 
 /**
  * Configuration for a resource provider
@@ -38,8 +40,19 @@ export abstract class ResourceProvider {
     /**
      * Get static resources provided by this provider.
      * Override this method to return static resources.
+     * URIs are validated against MCP standards (https://, file://, git://).
      */
     getStaticResources(): Resource[] {
+        const resources = this.getStaticResourcesImpl();
+        this.validateResourceUris(resources);
+        return resources;
+    }
+
+    /**
+     * Internal implementation of getStaticResources.
+     * Override this method instead of getStaticResources to avoid validation.
+     */
+    protected getStaticResourcesImpl(): Resource[] {
         return [];
     }
 
@@ -48,6 +61,28 @@ export abstract class ResourceProvider {
      * Override this method to return dynamic resource templates.
      */
     getResourceTemplates(): ResourceTemplate[] {
+        const templates = this.getResourceTemplatesImpl();
+        // Validate templates and ensure they conform to expected syntax
+        for (const t of templates) {
+            if (!t.uriTemplate || typeof t.uriTemplate !== 'string') {
+                throw new Error(`Invalid resource template (missing uriTemplate) in provider ${this.name}`);
+            }
+            if (!validateTemplate(t.uriTemplate)) {
+                throw new Error(`Invalid resource template syntax: ${t.uriTemplate} in provider ${this.name}`);
+            }
+            // Optionally validate resolved URI scheme if template contains no placeholders
+            if (!t.uriTemplate.includes('{') && !validateMcpUri(t.uriTemplate)) {
+                throw new Error(`Resource template resolves to unsupported URI scheme: ${t.uriTemplate}`);
+            }
+        }
+        return templates;
+    }
+
+    /**
+     * Internal implementation hook for resource templates.
+     * Providers should override this to return templates without validation.
+     */
+    protected getResourceTemplatesImpl(): ResourceTemplate[] {
         return [];
     }
 
@@ -72,6 +107,17 @@ export abstract class ResourceProvider {
     validateConfig(): void {
         if (!this.config.name) {
             throw new Error('Resource provider name is required');
+        }
+    }
+
+    /**
+     * Validate MCP resource URIs against standard schemes
+     */
+    private validateResourceUris(resources: Resource[]): void {
+        for (const resource of resources) {
+            if (!validateMcpUri(resource.uri)) {
+                throw new Error(`Invalid MCP resource URI: ${resource.uri}. Must use https://, file://, or git:// scheme.`);
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import { ResourceProvider } from '../providers/abstract/resource-provider.js';
 import { ToolProvider } from '../providers/abstract/tool-provider.js';
 import { PromptProvider } from '../providers/abstract/prompt-provider.js';
 import { Resource, ResourceTemplate, Tool, Prompt } from '../../types.js';
+import { matchUriTemplate } from '../../resource-template.js';
 import { createLogger, Logger } from '../../logging.js';
 
 /**
@@ -140,7 +141,7 @@ export class FrameworkServer {
 
         // Try resource templates
         for (const template of this.getResourceTemplates()) {
-            const match = this.matchUriTemplate(uri, template.uriTemplate);
+            const match = matchUriTemplate(uri, template.uriTemplate);
             if (match) {
                 const provider = this.registry.getResourceProvider(template.name);
                 if (provider) {
@@ -301,6 +302,7 @@ export class FrameworkServer {
             resources?: boolean;
             tools?: boolean;
             prompts?: boolean;
+            logging?: boolean;
         };
     } {
         const stats = this.registry.getStats();
@@ -313,7 +315,8 @@ export class FrameworkServer {
             capabilities: {
                 resources: stats.resourceProviders > 0,
                 tools: stats.toolProviders > 0,
-                prompts: stats.promptProviders > 0
+                prompts: stats.promptProviders > 0,
+                logging: true  // Framework always supports logging
             }
         };
     }
