@@ -1,4 +1,4 @@
-import { matchUriTemplate, resolveUriTemplate } from '../src/resource-template.js';
+import { matchUriTemplate, resolveUriTemplate, validateTemplate } from '../src/resource-template.js';
 
 describe('resource template matcher', () => {
     test('matches simple file template', () => {
@@ -15,5 +15,15 @@ describe('resource template matcher', () => {
         const uri = resolveUriTemplate(template, params);
         expect(uri).toContain('debian777');
         expect(uri).toContain('README.md');
+    });
+
+    test('invalid placeholders fail validation', () => {
+        const tpl = 'https://example.com/{bad placeholder}/file';
+        expect(validateTemplate(tpl)).toBe(false);
+    });
+
+    test('validateTemplate accepts valid scheme', () => {
+        const tpl = 'file://{path}';
+        expect(validateTemplate(tpl)).toBe(true);
     });
 });
