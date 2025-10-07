@@ -242,11 +242,106 @@ export class FrameworkServer {
     async start(): Promise<void> {
         await this.initialize();
 
-        const transport = new StdioTransport(() => {
-            // This would need to be implemented to handle MCP requests
-            // For now, this is a placeholder
-            throw new Error('Direct transport connection not implemented yet');
-        }, {
+        const handleRequest = async (request: any): Promise<any> => {
+            try {
+                if (request.method === 'initialize') {
+                    return {
+                        jsonrpc: '2.0',
+                        id: request.id ?? null,
+                        result: {
+                            protocolVersion: this.config.protocolVersion,
+                            capabilities: {
+                                resources: {},
+                                tools: {},
+                                prompts: {}
+                            },
+                            serverInfo: {
+                                name: this.config.name,
+                                version: this.config.version
+                            }
+                        }
+                    };
+                }
+
+                if (request.method === 'resources/list') {
+                    const resources = this.getStaticResources();
+                    const templates = this.getResourceTemplates();
+                    return {
+                        jsonrpc: '2.0',
+                        id: request.id ?? null,
+                        result: {
+                            resources,
+                            resourceTemplates: templates
+                        }
+                    };
+                }
+
+                if (request.method === 'resources/read') {
+                    const params = (request.params as any) || {};
+                    const uri = params.uri;
+                    if (!uri) {
+                        return { jsonrpc: '2.0', id: request.id ?? null, error: { code: -32602, message: 'Missing uri parameter' } };
+                    }
+                    try {
+                        const result = await this.readResource(uri, params);
+                        return { jsonrpc: '2.0', id: request.id ?? null, result };
+                    } catch (error: any) {
+                        return { jsonrpc: '2.0', id: request.id ?? null, error: { code: -32603, message: error?.message || String(error) } };
+                    }
+                }
+
+                if (request.method === 'tools/list') {
+                    const tools = this.getTools();
+                    return { jsonrpc: '2.0', id: request.id ?? null, result: { tools } };
+                }
+
+                if (request.method === 'tools/call') {
+                    const params = (request.params as any) || {};
+                    const name = params.name;
+                    const args = params.arguments || {};
+                    if (!name) {
+                        return { jsonrpc: '2.0', id: request.id ?? null, error: { code: -32602, message: 'Missing tool name' } };
+                    }
+                    try {
+                        const result = await this.callTool(name, args);
+                        return { jsonrpc: '2.0', id: request.id ?? null, result };
+                    } catch (error: any) {
+                        return { jsonrpc: '2.0', id: request.id ?? null, error: { code: -32603, message: error?.message || String(error) } };
+                    }
+                }
+
+                if (request.method === 'prompts/list') {
+                    const prompts = this.getPrompts();
+                    return { jsonrpc: '2.0', id: request.id ?? null, result: { prompts } };
+                }
+
+                if (request.method === 'prompts/get') {
+                    const params = (request.params as any) || {};
+                    const name = params.name;
+                    const args = params.arguments;
+                    if (!name) {
+                        return { jsonrpc: '2.0', id: request.id ?? null, error: { code: -32602, message: 'Missing prompt name' } };
+                    }
+                    try {
+                        const result = await this.getPrompt(name, args);
+                        return { jsonrpc: '2.0', id: request.id ?? null, result };
+                    } catch (error: any) {
+                        return { jsonrpc: '2.0', id: request.id ?? null, error: { code: -32603, message: error?.message || String(error) } };
+                    }
+                }
+
+                if (request.method === 'shutdown' || request.method === 'exit') {
+                    return { jsonrpc: '2.0', id: request.id ?? null, result: {} };
+                }
+
+                // Unknown method
+                return { jsonrpc: '2.0', id: request.id ?? null, error: { code: -32601, message: 'Method not found' } };
+            } catch (e) {
+                return { jsonrpc: '2.0', id: request?.id ?? null, error: { code: -32000, message: String(e instanceof Error ? e.message : e) } };
+            }
+        };
+
+        const transport = new StdioTransport(handleRequest, {
             logger: createTransportLogger(this.logger)
         });
         await transport.start();
