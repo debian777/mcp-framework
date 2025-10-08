@@ -30,11 +30,8 @@ export class ResourceRegistry {
         const resources = await handler.list();
         allResources.push(...resources);
       } catch (error) {
-        // Log error but continue with other handlers
-        console.error(
-          `Error listing resources from ${handler.type} handler:`,
-          error
-        );
+        // Silently skip handlers that fail - they can be debugged via handler.list() directly
+        // This ensures the registry remains functional even if one handler has issues
       }
     }
 
