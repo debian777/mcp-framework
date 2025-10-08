@@ -123,3 +123,23 @@ export type {
   WorkflowAnalyticsFilter,
   WorkflowAnalyticsResult,
 } from "./storage/index.js";
+
+export {
+  BaseResourceHandler,
+  type ResourceHandler,
+  type ResourceContent,
+  type ResourceReadResult,
+} from "./resources/base.js";
+export { ResourceRegistry } from "./resources/registry.js";
+export {
+  ConfigResourceHandler,
+  type ConfigData,
+} from "./resources/handlers/config.js";
+export {
+  DocsResourceHandler,
+  type DocsData,
+} from "./resources/handlers/docs.js";
+export {
+  ToolResourceHandler,
+  type ToolProvider,
+} from "./resources/handlers/tool.js";
