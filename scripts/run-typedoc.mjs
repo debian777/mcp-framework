@@ -13,7 +13,7 @@ import fs from 'fs';
         console.error('TypeDoc: no project generated');
         process.exit(1);
     }
-    await app.generateDocs(project, './site/api').catch(err => {
+    await app.generateDocs(project, './docs/api').catch(err => {
         console.error('generateDocs error', err);
         process.exit(1);
     });

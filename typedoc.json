@@ -3,7 +3,7 @@
     "entryPoints": [
         "src/index.ts"
     ],
-    "out": "site/api",
+    "out": "docs/api",
     "exclude": [
         "**/*.test.ts",
         "**/*.spec.ts",

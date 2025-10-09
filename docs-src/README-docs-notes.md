@@ -59,7 +59,7 @@ Build static site for production:
 npm run docs:build
 ```
 
-This generates the complete site in the `site/` directory.
+This generates the complete site in the `docs/` directory.
 
 ### Deploy Documentation
 
