@@ -6,7 +6,7 @@ module.exports = {
         '^.+\\.ts$': ['ts-jest', { useESM: true }],
     },
     roots: ['<rootDir>/src'],
-    testMatch: ['**/__tests__/**/*.test.ts'],
+    testMatch: ['**/tests/**/*.test.ts'],
     collectCoverageFrom: [
         'src/**/*.ts',
         '!src/**/*.d.ts',
