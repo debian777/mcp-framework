@@ -1,121 +1,242 @@
-# Core Concepts
+# MCP Framework Core Concepts
 
-This guide explains the fundamental concepts and architecture of mcp-framework. Understanding these concepts is essential for building effective MCP servers.
+**Build production-ready MCP servers in minutes, not days.** This guide explains the fundamental concepts and architecture of mcp-framework—a modern, type-safe framework that handles all the protocol complexity so you can focus on building amazing AI integrations.
+
+## Why MCP Framework?
+
+### The Problem
+Building MCP servers from scratch means dealing with:
+- ❌ Complex JSON-RPC protocol implementation
+- ❌ Transport layer configuration (STDIO, HTTP, WebSocket)
+- ❌ Input validation and security concerns
+- ❌ Boilerplate code for capability negotiation
+- ❌ Storage and persistence setup
+
+### The Solution
+**mcp-framework** provides:
+- ✅ **Provider-based architecture** - Implement simple abstract classes, get full MCP compliance
+- ✅ **Production-ready infrastructure** - Security, validation, logging, monitoring built-in
+- ✅ **Flexible transports** - STDIO for local, HTTP/WebSocket for remote—one line of code
+- ✅ **Type-safe APIs** - Full TypeScript support with strict checking
+- ✅ **Quick start** - From zero to working MCP server in under 5 minutes
 
 ## Model Context Protocol (MCP)
 
-MCP is an open protocol that standardizes how AI assistants can securely access external tools and resources. It defines a JSON-RPC-based communication protocol between:
+MCP is an open protocol that standardizes how AI assistants can securely access external tools and resources. Think of it as a **universal plugin system for AI**—enabling Claude, ChatGPT, and other assistants to integrate with any external system through a consistent interface.
 
-- **MCP Clients**: AI assistants (like Claude, ChatGPT) that want to use external capabilities
-- **MCP Servers**: Applications that provide tools, resources, and prompts to clients
+### The Protocol Architecture
 
-### Protocol Components
+```
+┌─────────────────┐         JSON-RPC         ┌─────────────────┐
+│   MCP Client    │◄────────────────────────►│   MCP Server    │
+│  (Claude, etc)  │    Tools, Resources      │  (Your Code)    │
+└─────────────────┘        Prompts           └─────────────────┘
+```
 
-MCP defines three main types of capabilities:
+- **MCP Clients**: AI assistants that want to use external capabilities
+- **MCP Servers**: Your applications that provide tools, resources, and prompts
 
-1. **Tools**: Actions that clients can invoke to perform tasks
-2. **Resources**: Data sources that clients can read from
-3. **Prompts**: Reusable prompt templates for consistent interactions
+### Three Core Capabilities
+
+MCP defines three types of capabilities that make AI integrations powerful:
+
+1. **🔧 Tools**: Actions that clients can invoke (e.g., "send_email", "query_database", "deploy_code")
+2. **📚 Resources**: Data sources that clients can read (e.g., files, documents, API responses)
+3. **💬 Prompts**: Reusable prompt templates for consistent AI interactions
 
 ## Framework Architecture
 
-mcp-framework provides a clean separation between protocol implementation and business logic:
+mcp-framework uses a **clean separation of concerns** that lets you focus on your domain logic while the framework handles all protocol complexity:
 
 ```
-Framework Layer (mcp-framework)
-├── Transport Layer (STDIO, HTTP, WebSocket)
-├── JSON-RPC Protocol Handler
-├── Provider Registry
-└── Infrastructure (Storage, Logging, Security)
-
-Business Logic Layer (Your Code)
-├── ToolProvider implementations
-├── ResourceProvider implementations
-└── PromptProvider implementations
+┌─────────────────────────────────────────────────────┐
+│         Framework Layer (mcp-framework)             │
+│  ┌────────────────────────────────────────────┐    │
+│  │  Transport: STDIO │ HTTP │ WebSocket       │    │
+│  ├────────────────────────────────────────────┤    │
+│  │  JSON-RPC Protocol Handler                 │    │
+│  ├────────────────────────────────────────────┤    │
+│  │  Provider Registry & Lifecycle             │    │
+│  ├────────────────────────────────────────────┤    │
+│  │  Storage │ Security │ Logging │ Monitoring │    │
+│  └────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────┘
+                         ▲
+                         │ Simple Abstract Classes
+                         ▼
+┌─────────────────────────────────────────────────────┐
+│        Business Logic Layer (Your Code)             │
+│  ┌────────────────────────────────────────────┐    │
+│  │  ToolProvider implementations              │    │
+│  │  ResourceProvider implementations          │    │
+│  │  PromptProvider implementations            │    │
+│  └────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────┘
 ```
 
-### Key Principles
+### Design Principles
 
-- **Separation of Concerns**: Framework handles protocol, you handle business logic
-- **Provider Pattern**: Abstract base classes define contracts for implementations
-- **Plugin Architecture**: Dynamic registration and discovery of providers
-- **Type Safety**: Full TypeScript support with strict type checking
+🎯 **Separation of Concerns**: Framework handles protocol, you handle business logic
+🔌 **Provider Pattern**: Implement abstract base classes, get full MCP compliance
+🧩 **Plugin Architecture**: Dynamic registration and discovery of providers
+🛡️ **Type Safety**: Full TypeScript support with strict type checking
+⚡ **Performance First**: Built-in caching, connection pooling, and optimization
+📊 **Observable**: Structured logging, metrics, and health checks out of the box
 
-## Providers
+## Providers: Your Path to MCP Compliance
 
-Providers are the core abstraction in mcp-framework. They encapsulate business logic and define how your MCP server interacts with the world.
+Providers are the **only code you need to write**. Extend abstract base classes, implement a few methods, and you have a production-ready MCP server. No protocol knowledge required.
 
-### ToolProvider
+### 🔧 ToolProvider - Give AI the Power to Act
 
-Tools allow AI assistants to perform actions in your system.
+Tools let AI assistants **perform actions** in your systems. Think: sending emails, querying databases, deploying code, managing infrastructure.
 
 ```typescript
-abstract class ToolProvider {
-  abstract getToolDefinitions(): ToolDefinition[];
-  abstract callTool(name: string, args: any, requestId?: string): Promise<any>;
+import { ToolProvider } from '@debian777/mcp-framework';
+
+class DeploymentProvider extends ToolProvider {
+  getToolDefinitions() {
+    return [{
+      name: 'deploy_app',
+      description: 'Deploy application to production',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          app: { type: 'string', description: 'Application name' },
+          version: { type: 'string', description: 'Version to deploy' }
+        },
+        required: ['app', 'version']
+      }
+    }];
+  }
+
+  async callTool(name: string, args: any) {
+    if (name === 'deploy_app') {
+      // Your deployment logic here
+      const result = await this.deployToProduction(args.app, args.version);
+      return {
+        content: [{
+          type: 'text',
+          text: `✅ Deployed ${args.app}@${args.version} to production`
+        }]
+      };
+    }
+  }
 }
 ```
 
-**Key Concepts:**
-- **Tool Definitions**: Metadata about available tools (name, description, parameters)
-- **Tool Execution**: Actual implementation of tool logic
-- **Error Handling**: Proper error responses for failed operations
+**What you get:**
+- ✅ Input validation against your schema (automatic)
+- ✅ Error handling with MCP-compliant responses
+- ✅ Request tracking and logging
+- ✅ Full TypeScript type safety
 
-### ResourceProvider
+### 📚 ResourceProvider - Feed AI with Context
 
-Resources provide access to data that AI assistants can read.
+Resources let AI assistants **read data** from your systems. Think: documentation, logs, configurations, database records, file systems.
 
 ```typescript
-abstract class ResourceProvider {
-  abstract getStaticResources(): Resource[];
-  abstract readResource(uri: string): Promise<ResourceContent>;
+import { ResourceProvider } from '@debian777/mcp-framework';
+
+class DocsProvider extends ResourceProvider {
+  getStaticResources() {
+    return [{
+      uri: 'docs://api/getting-started',
+      name: 'Getting Started Guide',
+      description: 'Introduction to our API',
+      mimeType: 'text/markdown'
+    }];
+  }
+
+  async readResource(uri: string) {
+    // Load documentation from your source
+    const content = await this.loadDocumentation(uri);
+
+    return {
+      contents: [{
+        uri,
+        mimeType: 'text/markdown',
+        text: content
+      }]
+    };
+  }
 }
 ```
 
-**Key Concepts:**
-- **Static Resources**: Pre-defined resources with fixed URIs
-- **Dynamic Resources**: Resources discovered at runtime
-- **URI Schemes**: Custom URI schemes for organizing resources
-- **Content Types**: Proper MIME type handling
+**Powerful features:**
+- 📂 **Static & Dynamic Resources**: Pre-defined or runtime-discovered
+- 🔗 **Custom URI Schemes**: `docs://`, `db://`, `git://` - organize however you want
+- 🎭 **MIME Type Support**: Text, JSON, binary - proper content type handling
+- 🔄 **Resource Templates**: Dynamic URI generation with parameters
 
-### PromptProvider
+### 💬 PromptProvider - Standardize AI Interactions
 
-Prompts provide reusable prompt templates for consistent AI interactions.
+Prompts create **reusable templates** for consistent AI interactions. Perfect for code reviews, incident response, documentation generation—any workflow that needs consistent prompting.
 
 ```typescript
-abstract class PromptProvider {
-  abstract getPromptDefinitions(): PromptDefinition[];
-  abstract getPrompt(name: string, args?: any): Promise<PromptContent>;
+import { PromptProvider } from '@debian777/mcp-framework';
+
+class CodeReviewProvider extends PromptProvider {
+  getPromptDefinitions() {
+    return [{
+      name: 'review_pr',
+      description: 'Review pull request for best practices',
+      arguments: [{
+        name: 'pr_number',
+        description: 'Pull request number',
+        required: true
+      }]
+    }];
+  }
+
+  async getPrompt(name: string, args?: any) {
+    const prData = await this.fetchPR(args.pr_number);
+
+    return {
+      messages: [
+        {
+          role: 'user',
+          content: {
+            type: 'text',
+            text: `Review PR #${args.pr_number}:\n${prData.diff}`
+          }
+        }
+      ]
+    };
+  }
 }
 ```
 
-**Key Concepts:**
-- **Prompt Templates**: Reusable prompt structures
-- **Parameterization**: Dynamic prompt content based on arguments
-- **Message Sequences**: Multi-turn conversation templates
+**Use cases:**
+- 📝 Code review templates
+- 🚨 Incident response workflows
+- 📖 Documentation generation
+- 🔍 Analysis and reporting
 
-## Transport Layer
+## Transport Layer: One Line Configuration
 
-The transport layer handles communication between MCP clients and servers.
+Switch between local and remote deployments **without changing your provider code**. The framework handles all the protocol complexity.
 
-### STDIO Transport
+### 🖥️ STDIO Transport - Local & Fast
 
-Used for local development and direct process communication:
+Perfect for local development, CLI tools, and direct process integration:
 
 ```typescript
+// One line - that's it!
 const server = await new FrameworkBuilder()
   .withTransport('stdio')
   .build();
 ```
 
-**Use Cases:**
-- Local development and testing
-- Direct process integration
-- Simple deployment scenarios
+**When to use:**
+- ✅ Local development and testing
+- ✅ CLI tool integration
+- ✅ Desktop applications
+- ✅ Process-to-process communication
 
-### HTTP Transport
+### 🌐 HTTP Transport - Remote & Scalable
 
-Used for remote communication and web-based deployments:
+Deploy your MCP server as a web service:
 
 ```typescript
 const server = await new FrameworkBuilder()
@@ -127,15 +248,16 @@ const server = await new FrameworkBuilder()
   .build();
 ```
 
-**Features:**
-- RESTful endpoints for MCP protocol
-- Health check endpoints
-- Metrics and monitoring
-- CORS support
+**Built-in features:**
+- 🏥 Health check endpoints (`/health`)
+- 📊 Metrics and monitoring (`/metrics`)
+- 🔐 CORS support
+- 📝 OpenAPI documentation
+- ⚡ Connection pooling
 
-### WebSocket Transport
+### ⚡ WebSocket Transport - Real-time
 
-For real-time, bidirectional communication:
+For persistent connections and real-time bidirectional communication:
 
 ```typescript
 const server = await new FrameworkBuilder()
@@ -146,6 +268,12 @@ const server = await new FrameworkBuilder()
   })
   .build();
 ```
+
+**Perfect for:**
+- 🔄 Real-time updates
+- 📡 Streaming data
+- 💬 Interactive sessions
+- 🎮 Low-latency applications
 
 ## Storage Abstraction
 
@@ -325,35 +453,144 @@ my-plugin/
     └── index.js
 ```
 
-## Best Practices
+## Best Practices for Hackathon Success
 
-### Provider Design
+### 🎯 Provider Design
 
-- **Single Responsibility**: Each provider should do one thing well
-- **Error Resilience**: Handle errors gracefully and provide meaningful messages
-- **Type Safety**: Use TypeScript interfaces for all data structures
-- **Documentation**: Provide clear descriptions for tools, resources, and prompts
+**Single Responsibility**
+Each provider focuses on one domain. Better to have 3 small providers than 1 giant one.
 
-### Performance
+```typescript
+✅ Good: EmailProvider, SlackProvider, PagerDutyProvider
+❌ Bad: NotificationProvider (doing everything)
+```
 
-- **Async Operations**: Use async/await for all I/O operations
-- **Resource Limits**: Implement timeouts and size limits
-- **Caching**: Cache expensive operations when appropriate
-- **Monitoring**: Add logging and metrics for observability
+**Type Safety First**
+Use TypeScript interfaces—catch errors at compile time, not runtime.
 
-### Security
+```typescript
+interface DeploymentArgs {
+  app: string;
+  version: string;
+  environment: 'staging' | 'production';
+}
 
-- **Input Validation**: Validate all inputs, never trust user data
-- **Error Messages**: Don't leak sensitive information in error messages
-- **Access Control**: Implement proper authorization checks
-- **Secure Defaults**: Use secure defaults for all configuration options
+async callTool(name: string, args: DeploymentArgs) { /* ... */ }
+```
 
-### Testing
+**Clear Documentation**
+AI assistants read your descriptions—make them count!
 
-- **Unit Tests**: Test individual provider methods
-- **Integration Tests**: Test complete server functionality
-- **Mock Providers**: Use mock implementations for testing
-- **MCP Inspector**: Test with the official MCP Inspector tool
+```typescript
+✅ Good: "Deploy application to production environment with health checks"
+❌ Bad: "Deploy stuff"
+```
+
+### ⚡ Performance Tips
+
+**Async Everything**
+Use `async/await` for all I/O operations—never block the event loop.
+
+**Smart Caching**
+Cache expensive operations, but invalidate properly:
+
+```typescript
+private cache = new Map<string, { data: any, timestamp: number }>();
+
+async readResource(uri: string) {
+  const cached = this.cache.get(uri);
+  if (cached && Date.now() - cached.timestamp < 60000) {
+    return cached.data;  // Cache hit!
+  }
+  // Fetch fresh data...
+}
+```
+
+**Resource Limits**
+Always implement timeouts and size limits:
+
+```typescript
+const result = await Promise.race([
+  this.expensiveOperation(),
+  new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Timeout')), 5000)
+  )
+]);
+```
+
+### 🛡️ Security Essentials
+
+**Validate Everything**
+The framework validates against your schemas, but add business logic checks:
+
+```typescript
+async callTool(name: string, args: any) {
+  // Schema validation happens automatically
+  // Add business logic validation:
+  if (args.amount > MAX_ALLOWED) {
+    throw new Error('Amount exceeds limit');
+  }
+}
+```
+
+**Safe Error Messages**
+Don't leak internal details:
+
+```typescript
+✅ Good: "Database connection failed"
+❌ Bad: "Connection to postgres://admin:pass123@internal-db:5432 failed"
+```
+
+**Access Control**
+Implement authorization checks for sensitive operations:
+
+```typescript
+async callTool(name: string, args: any, requestId?: string) {
+  if (name === 'delete_production_data') {
+    // Check permissions before executing!
+    await this.checkAdminPermission(requestId);
+  }
+}
+```
+
+### 🧪 Testing Strategy
+
+**Quick Testing with MCP Inspector**
+Test your server in minutes:
+
+```bash
+npm install -g @modelcontextprotocol/inspector
+mcp-inspector node dist/server.js
+```
+
+**Unit Test Your Providers**
+Test business logic independently:
+
+```typescript
+describe('EmailProvider', () => {
+  it('sends email with correct parameters', async () => {
+    const provider = new EmailProvider();
+    const result = await provider.callTool('send_email', {
+      to: 'test@example.com',
+      subject: 'Test'
+    });
+    expect(result.content[0].text).toContain('Email sent');
+  });
+});
+```
+
+**Integration Tests**
+Test the complete server:
+
+```typescript
+const server = await new FrameworkBuilder()
+  .withTransport('stdio')
+  .withToolProvider(new EmailProvider())
+  .build();
+
+await server.start();
+// Test MCP protocol interactions...
+```
 
 ## Migration Guide
 
@@ -382,11 +619,101 @@ When migrating from other MCP frameworks:
 - **[Transport Extensions](guides/transports.md#custom-transports)**
 - **[Performance Tuning](guides/deployment.md#performance-tuning)**
 
+## Quick Start: Build Your First MCP Server
+
+Ready to start building? Here's a complete working example:
+
+```typescript
+import { FrameworkBuilder, ToolProvider } from '@debian777/mcp-framework';
+
+// 1. Create your provider
+class HackerProvider extends ToolProvider {
+  getToolDefinitions() {
+    return [{
+      name: 'hack_the_planet',
+      description: 'The classic hack',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          target: { type: 'string' }
+        },
+        required: ['target']
+      }
+    }];
+  }
+
+  async callTool(name: string, args: any) {
+    return {
+      content: [{
+        type: 'text',
+        text: `🎯 ${args.target} has been hacked! (Just kidding 😉)`
+      }]
+    };
+  }
+}
+
+// 2. Build and start server (3 lines!)
+const server = await new FrameworkBuilder()
+  .withTransport('stdio')
+  .withToolProvider(new HackerProvider())
+  .build();
+
+await server.start();
+```
+
+**That's it!** You now have a working MCP server. 🚀
+
+## Hackathon Pro Tips
+
+### 🏆 Winning Strategy
+
+1. **Start Simple**: Get one provider working end-to-end first
+2. **Use Examples**: Copy from [examples/](../examples/) directory
+3. **Test Early**: Use MCP Inspector to test as you build
+4. **Add Polish**: Health checks, logging, metrics make you stand out
+5. **Document**: Great README = great impression
+
+### ⏱️ Time-Saving Shortcuts
+
+**Use the builder pattern:**
+```typescript
+const server = await new FrameworkBuilder()
+  .withTransport('stdio')
+  .withStorage({ type: 'sqlite', path: './data.db' })
+  .withToolProvider(provider1)
+  .withToolProvider(provider2)  // Chain multiple providers!
+  .withResourceProvider(provider3)
+  .build();
+```
+
+**Enable debug logging:**
+```bash
+MCP_LOG_LEVEL=debug node dist/server.js
+```
+
+**Test with curl (HTTP transport):**
+```bash
+curl http://localhost:3000/health
+curl http://localhost:3000/mcp -d '{"jsonrpc":"2.0","method":"tools/list","id":1}'
+```
+
+### 🎪 Demo Ideas
+
+- 🤖 **DevOps Assistant**: Deploy, monitor, rollback with AI
+- 📊 **Analytics Explorer**: Query databases, generate reports
+- 🔐 **Security Toolkit**: Scan, audit, generate policies
+- 📝 **Documentation Bot**: Generate docs from code
+- 🎮 **Game Master**: AI-powered game mechanics
+
 ## Next Steps
 
-Now that you understand the core concepts:
+🚀 **[Getting Started Guide](getting-started.md)** - Your first MCP server in 5 minutes
+🔧 **[Tools Guide](guides/tools.md)** - Deep dive into tool development
+📚 **[Examples](examples/)** - Complete working examples
+📖 **[API Reference](reference/)** - Detailed API documentation
 
-- **[Getting Started](getting-started.md)**: Create your first MCP server
-- **[Tools Guide](guides/tools.md)**: Learn about tool development
-- **[Examples](examples/)**: See complete working examples
-- **[API Reference](reference/)**: Detailed API documentation
+---
+
+**Questions?** Check out our [GitHub Discussions](https://github.com/debian777/mcp-framework/discussions) or dive into the code!
+
+*Built for the Model Context Protocol ecosystem. Made for hackathons. Designed for production.* 🎯
