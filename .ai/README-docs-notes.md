@@ -107,28 +107,17 @@ docs/
 - Use code blocks with language hints: ````typescript`
 - Use relative links for internal documentation
 - Include table of contents for long documents
-- Use admonitions for important notes:
 
-```markdown
 !!! note
     This is a note
 
 !!! warning
-    This is a warning
 
 !!! tip
     This is a tip
 ```
 
-### Code Examples
 
-- Include runnable code examples
-- Use TypeScript for all code samples
-- Test examples to ensure they work
-- Include imports and setup code
-- Add comments explaining complex parts
-
-### Cross-References
 
 - Link to related documentation sections
 - Reference API documentation when relevant
@@ -153,28 +142,15 @@ nav:
   - Guides: guides/
   - Examples: examples/
   - Reference: reference/
-  # Note: AI Instructions are in .ai/README.md (not included in MkDocs navigation)
 ```
 
 ## TypeDoc Configuration
 
-The `typedoc.json` file configures API documentation generation:
-
-- **Entry Point**: `src/index.ts` (main export)
-- **Output**: `docs/api/` directory
-- **Exclusions**: Private members, test files
 - **Features**: Source links, categorization, search
-
 ### API Documentation Categories
 
 - **Providers**: ToolProvider, ResourceProvider, PromptProvider
-- **Server**: FrameworkServer, FrameworkBuilder
-- **Transport**: Transport implementations
-- **Storage**: Storage interfaces (currently only memory backend)
-- **Configuration**: Configuration types and utilities
-- **Utilities**: Helper functions and utilities
 
-## GitHub Actions Workflow
 
 The `.github/workflows/docs.yml` automates documentation deployment:
 
